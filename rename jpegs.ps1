@@ -1,0 +1,1 @@
+﻿dir d:\_AllPhotos -File -Recurse -Include *.jpeg | % { rename-item $_.FullName ($_.FullName -replace ".jpeg", ".jpg")}
