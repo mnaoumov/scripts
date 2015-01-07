@@ -1,0 +1,1 @@
+.\exiftool.exe .\MVI_4277.mp4 "-FileModifyDate<FileModifyDate" "-FileCreateDate<FileModifyDate" "-CreateDate<FileModifyDate" "-ModifyDate<FileModifyDate" "-TrackCreateDate<FileModifyDate" "-TrackModifyDate<FileModifyDate" "-MediaCreateDate<FileModifyDate" "-MediaModifyDate<FileModifyDate"

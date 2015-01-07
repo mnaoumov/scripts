@@ -1,0 +1,4 @@
+.\exiftool.exe .\MVI_4277.mp4 "-CreateDate=2014:02:02 18:10:00+11:00" "-filemodifydate=2014:02:02 18:10:00+11:00" "-filecreatedate=2014:02:02 18:10:00+11:00" "-ModifyDate=2014:02:02 18:10:00+11:00" "-TrackCreateDate=2014:02:02 18:10:00+11:00" "-TrackModifyDate=2014:02:02 18:10:00+11:00" "-MediaCreateDate=2014:02:02 18:10:00+11:00" "-MediaModifyDate=2014:02:02 18:10:00+11:00"
+
+
+.\exiftool.exe .\MVI_4277.mp4 "-FileCreateDate<FileModifyDate "-CreateDate<FileModifyDate" "-ModifyDate=2014:02:02 18:10:00+11:00" "-TrackCreateDate=2014:02:02 18:10:00+11:00" "-TrackModifyDate=2014:02:02 18:10:00+11:00" "-MediaCreateDate=2014:02:02 18:10:00+11:00" "-MediaModifyDate=2014:02:02 18:10:00+11:00"
