@@ -1,29 +1,65 @@
-﻿cd d:\_AllPhotos\_TODO\Photo\gif 
+﻿#requires -version 2.0
 
-(dir) | % {
+[CmdletBinding()]
+param
+(
+)
+
+$script:ErrorActionPreference = "Stop"
+Set-StrictMode -Version Latest
+function PSScriptRoot { $MyInvocation.ScriptName | Split-Path }
+
+trap { 
+
+throw $Error[0] }
+
+(dir *.jpg -recurse) | % {
     $date = $_.LastWriteTime
-    $newName = ("{0:yyyy-MM-dd_HH-mm-ss}.gif" -f $date)
+    $newName = ("{0:yyyy-MM-dd_HH-mm-ss}.jpg" -f $date)
+    $dir = $_.Directory.FullName
 
     if ($_.Name -eq $newName)
     {
         return;
     }
 
-    if ($_.Name -like "*_Dup*.gif")
+    $newNameWithoutExtension = $newName -replace ".jpg"
+
+    if ($_.Name -match "$($newNameWithoutExtension)_\d+.jpg")
     {
         return;
     }
 
-    if (Test-Path $newName)
+    $nextNewName = "$($newNameWithoutExtension)_1.jpg"
+
+    if ((Test-Path "$dir\$newName"))
     {
-        $counter = 0
-        do
-        {
-            $newName = ".\{0:yyyy-MM-dd_HH-mm-ss}_Dup{1}.gif" -f $date, $counter
-            $counter++
+        try{
+        Rename-Item "$dir\$newName" $nextNewName
         }
-        while (Test-Path $newName)
+        catch
+        {
+          throw
+        }
+
     }
 
+    if ((Test-Path "$dir\$nextNewName"))
+    {
+        $counter = 2
+        do
+        {
+            $newName = "$($newNameWithoutExtension)_$counter.jpg"
+            $counter++
+        }
+        while (Test-Path "$dir\$newName")
+    }
+    cd
+    try{
     Rename-Item $_.FullName -NewName $newName
+    }
+    catch
+    {
+    throw
+    }
 }

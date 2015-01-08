@@ -28,8 +28,13 @@ function Get-DateTaken
         return $null
     }
 
-    $dateTime = [DateTime]::ParseExact($str, "yyyy:MM:dd HH:mm:ss`0", $null)
-    return $dateTime;
+    $dateTime = [DateTime]::MinValue
+    if ([DateTime]::TryParseExact($str, "yyyy:MM:dd HH:mm:ss", $null, [System.Globalization.DateTimeStyles]::None, [ref] $dateTime))
+    {
+        return $dateTime
+    }
+
+    return $null
 }
 
 function Get-ExifProperty
@@ -42,7 +47,6 @@ function Get-ExifProperty
 
     $fullPath = Resolve-PathSafe $ImagePath
 
-    write-host $fullPath
     PSUsing ($fs = [System.IO.File]::OpenRead($fullPath)) `
     {
         PSUsing ($image = [System.Drawing.Image]::FromStream($fs, $false, $false)) `
@@ -54,7 +58,7 @@ function Get-ExifProperty
 
             $propertyItem = $image.GetPropertyItem($ExifTagCode)
             $valueBytes = $propertyItem.Value
-            $value = [System.Text.Encoding]::ASCII.GetString($valueBytes)
+            $value = [System.Text.Encoding]::ASCII.GetString($valueBytes) -replace "`0$"
             return $value
         }
     }

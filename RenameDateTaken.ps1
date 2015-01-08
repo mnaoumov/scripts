@@ -1,34 +1,68 @@
-﻿cd d:\_AllPhotos\_TODO\Photos 
-dir *.jpg | % {
+﻿#requires -version 2.0
+
+[CmdletBinding()]
+param
+(
+)
+
+$script:ErrorActionPreference = "Stop"
+Set-StrictMode -Version Latest
+function PSScriptRoot { $MyInvocation.ScriptName | Split-Path }
+
+trap { throw $Error[0] }
+
+dir *.jpg -recurse | % {
     $date = Get-DateTaken -ImagePath $_.FullName
     if ($date -eq $null)
     {
-        Move-Item -LiteralPath $_.FullName -Destination ".\NoDate"
-        return;
+        return
     }
-    
-    $newName = ".\{0:yyyy-MM-dd_HH-mm-ss}.jpg" -f $date
+    write-host $_.FullName
+    $newName = ("{0:yyyy-MM-dd_HH-mm-ss}.jpg" -f $date)
+    $dir = $_.Directory.FullName
 
-    if (".\$($_.Name)" -eq $newName)
+    if ($_.Name -eq $newName)
     {
         return;
     }
 
-    if ($_.Name -like "*_Dup*.jpg")
+    $newNameWithoutExtension = $newName -replace ".jpg"
+
+    if ($_.Name -match "$($newNameWithoutExtension)_\d+.jpg")
     {
         return;
     }
 
-    if (Test-Path $newName)
+    $nextNewName = "$($newNameWithoutExtension)_1.jpg"
+
+    if ((Test-Path "$dir\$newName"))
     {
-        $counter = 0
+        try{
+        Move-Item -LiteralPath "$dir\$newName" -Destination "$dir\$nextNewName"
+        }
+        catch
+        {
+          throw
+        }
+
+    }
+
+    if ((Test-Path "$dir\$nextNewName"))
+    {
+        $counter = 2
         do
         {
-            $newName = ".\{0:yyyy-MM-dd_HH-mm-ss}_Dup{1}.jpg" -f $date, $counter
+            $newName = "$($newNameWithoutExtension)_$counter.jpg"
             $counter++
         }
-        while (Test-Path $newName)
+        while (Test-Path "$dir\$newName")
     }
 
-    Move-Item -LiteralPath $_.FullName -Destination $newName
+    try{
+    Move-Item -LiteralPath $_.FullName -Destination "$dir\$newName"
+    }
+    catch
+    {
+    throw
+    }
 }
