@@ -11,6 +11,8 @@ function PSScriptRoot { $MyInvocation.ScriptName | Split-Path }
 
 trap { throw $Error[0] }
 
+. "$(PSSCriptRoot)\Get-DateTaken.ps1"
+
 dir *.jpg -recurse | % {
     $date = Get-DateTaken -ImagePath $_.FullName
     if ($date -eq $null)
